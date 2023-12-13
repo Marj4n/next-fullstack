@@ -1,8 +1,8 @@
 "use client";
 
 import { useToast } from "@/components/ui/use-toast";
-import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
@@ -12,50 +12,50 @@ export const LoginForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({
-    name: "",
     username: "",
     password: "",
-    confirmPass: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
 
-      const res = await axios.post("/api/register", formValues);
+      const res = await signIn("credentials", {
+        redirect: false,
+        username: formValues.username,
+        password: formValues.password,
+        callbackUrl,
+      });
 
       setLoading(false);
 
-      if (res.data.success) {
-        setFormValues({
-          name: "",
-          username: "",
-          password: "",
-          confirmPass: "",
-        });
-
+      if (!res?.error) {
+        setFormValues({ username: "", password: "" });
         toast({
           title: "Success",
-          description: "Account created successfully.",
+          description: "Login berhasil.",
           variant: "success",
         });
 
         setTimeout(() => {
-          router.push("/login");
+          router.push(callbackUrl);
           router.refresh();
         }, 500);
       } else {
         toast({
           title: "Error",
-          description: res.data.message || "An error occurred.",
+          description: "Gagal login. Periksa username dan password Anda.",
           variant: "destructive",
         });
       }
     } catch (error: any) {
       setLoading(false);
-      console.error("Error registering user:", error);
+      console.error("Error login:", error);
     }
   };
 

@@ -13,7 +13,7 @@ export default async function RegisterPage() {
     <section>
       <div className="flex flex-col items-center justify-center gap-0 px-6 py-8 mx-auto md:flex-row md:items-center md:justify-center md:gap-16 h-[90vh]">
         <a
-          href="vercel.com"
+          href="https://vercel.com/"
           className="flex items-center xs:mb-0 md:mb-6 text-2xl font-semibold text-gray-900 dark:text-white bg-white"
         >
           <img

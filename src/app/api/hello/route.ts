@@ -5,7 +5,7 @@ export async function GET(req: Request, res: Response) {
     return NextResponse.json(
       {
         message: "Hello World",
-        description: "welcome to the api route",
+        description: "Welcome to the api route",
         data: [
           {
             route: "users",
@@ -16,6 +16,17 @@ export async function GET(req: Request, res: Response) {
             route: "users?id=$id",
             method: "GET",
             description: "Returns a single user",
+          },
+          {
+            route: "register",
+            method: "POST",
+            description: "Registers a new user",
+            body: {
+              name: "string",
+              username: "string",
+              password: "string",
+              confirmPass: "string",
+            },
           },
         ],
       },

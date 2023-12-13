@@ -1,11 +1,32 @@
 import { prisma } from "@/lib/prisma";
+import { registerSchema } from "@/schemas/register";
 import { hash } from "bcrypt";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request, res: Response) {
   try {
     const body = await req.json();
-    const { name, username, password, confirmPass } = body;
+
+    const { name, username, password, confirmPass } =
+      registerSchema.parse(body);
+
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Username already exists.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
     if (password !== confirmPass) {
       return NextResponse.json(

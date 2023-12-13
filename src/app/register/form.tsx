@@ -29,8 +29,6 @@ export const RegisterForm = () => {
 
       setLoading(false);
 
-      console.log(res.data);
-
       if (res.data.success) {
         setFormValues({
           name: "",
@@ -49,16 +47,15 @@ export const RegisterForm = () => {
           router.push("/login");
           router.refresh();
         }, 500);
-      } else {
-        toast({
-          title: "Error",
-          description: res.data.message || "An error occurred.",
-          variant: "destructive",
-        });
       }
     } catch (error: any) {
       setLoading(false);
       console.error("Error registering user:", error);
+      toast({
+        title: "Error",
+        description: error.response.data.message || "An error occurred.",
+        variant: "destructive",
+      });
     }
   };
 
