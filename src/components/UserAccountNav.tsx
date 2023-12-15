@@ -15,8 +15,9 @@ import { LogOut } from "lucide-react";
 type Props = {
   user: {
     id: string;
-    name?: string | null;
+    name: string;
     username: string;
+    role: string;
   };
 };
 
@@ -38,7 +39,11 @@ const UserAccountNav = ({ user }: Props) => {
       <DropdownMenuContent className="bg-white" align="end">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            {user.name && <p className="font-medium text-black">{user.name}</p>}
+            {user.name && (
+              <b className=" text-black">
+                {user.name} || {user.role}
+              </b>
+            )}
             {user.username && (
               <p className="w-[200px] truncate text-sm text-zinc-700">
                 {user.username}

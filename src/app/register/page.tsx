@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { RegisterForm } from "./form";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+import Image from "next/image";
 
 export default async function RegisterPage() {
   const session = await getServerSession(authOptions);
@@ -14,12 +15,15 @@ export default async function RegisterPage() {
       <div className="flex flex-col items-center justify-center gap-0 px-6 py-8 mx-auto md:flex-row md:items-center md:justify-center md:gap-16 h-[90vh]">
         <a
           href="https://vercel.com/"
-          className="flex items-center xs:mb-0 md:mb-6 text-2xl font-semibold text-gray-900 dark:text-white bg-white"
+          className="flex items-center xs:mb-8 md:mb-0 text-2xl font-semibold text-gray-900"
         >
-          <img
-            className="w-60 h-60 md:w-96 md:h-96"
+          <Image
             src="/vercel.svg"
-            alt="logo"
+            alt="Vercel Logo"
+            className="dark:invert"
+            width={300}
+            height={100}
+            priority
           />
         </a>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">

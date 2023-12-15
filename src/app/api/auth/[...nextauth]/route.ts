@@ -7,6 +7,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      role: string;
       username: string;
       name: string;
     };
@@ -16,6 +17,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
+    role: string;
     username: string;
     name: string;
   }
@@ -63,6 +65,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id + "",
           username: user.username,
           name: user.name,
+          role: user.role,
         };
       },
     }),
@@ -75,6 +78,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.id,
+          role: token.role,
           username: token.username,
           name: token.name,
         },
@@ -87,6 +91,7 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           id: u.id,
+          role: u.role,
           username: u.username,
           name: u.name,
         };
