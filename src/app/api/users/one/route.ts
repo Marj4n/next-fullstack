@@ -1,7 +1,18 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { isLogin } from "@/lib/utils";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: Request, res: Response) {
+export async function GET(req: NextRequest) {
+  if (!isLogin(req)) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized",
+      },
+      {
+        status: 401,
+      }
+    );
+  }
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");

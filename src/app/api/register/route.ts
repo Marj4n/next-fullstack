@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/schemas/register";
 import { hash } from "bcrypt";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 

@@ -1,7 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isLogin } from "@/lib/utils";
 
-export async function GET(req: Request, res: Response) {
+export async function GET(req: NextRequest) {
+  if (!isLogin(req)) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized",
+      },
+      {
+        status: 401,
+      }
+    );
+  }
   try {
     const users = await prisma.user.findMany({
       where: {

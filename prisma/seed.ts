@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 var bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
@@ -7,12 +7,19 @@ async function seedUsers() {
     {
       username: "user",
       name: "This is a user",
+      role: Role.user,
       password: "user123",
+    },
+    {
+      username: "admin",
+      name: "This is a admin",
+      role: Role.admin,
+      password: "admin123",
     },
   ];
 
   for (const userData of usersData) {
-    const { username, name, password } = userData;
+    const { username, name, role, password } = userData;
     const hashedPassword = await bcrypt.hash(password, 12);
 
     await prisma.user.upsert({
@@ -21,6 +28,7 @@ async function seedUsers() {
       create: {
         username,
         name,
+        role,
         password: hashedPassword,
       },
     });

@@ -1,6 +1,15 @@
+import { getServerSession } from "next-auth";
 import Image from "next/image";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+  const user = session?.user;
+  if (user?.role !== "admin") {
+    return redirect("/");
+  }
+  
   return (
     <section>
       <div className="flex flex-col items-center justify-center gap-0 px-6 py-8 mx-auto md:flex-row md:items-center md:justify-center md:gap-16 h-[90vh]">
