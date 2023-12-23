@@ -1,7 +1,14 @@
 import { getServerSession } from "next-auth";
-import Image from "next/image";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { LayoutDashboard } from "lucide-react";
+import DataResponse from "./data-response";
+import { CardDescription, CardTitle } from "@/components/ui/card";
+
+export const metadata = {
+  title: "Dashboard | Next-Fullstack",
+};
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -9,31 +16,20 @@ export default async function DashboardPage() {
   if (user?.role !== "admin") {
     return redirect("/");
   }
-  
+
   return (
-    <section>
-      <div className="flex flex-col items-center justify-center gap-0 px-6 py-8 mx-auto md:flex-row md:items-center md:justify-center md:gap-16 h-[90vh]">
-        <a
-          href="https://vercel.com/"
-          className="flex items-center xs:mb-8 md:mb-0 text-2xl font-semibold text-gray-900"
-        >
-          <Image
-            src="/vercel.svg"
-            alt="Vercel Logo"
-            className="dark:invert"
-            width={300}
-            height={100}
-            priority
-          />
-        </a>
-        <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-          <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              This is dashboard.
-            </h1>
-          </div>
-        </div>
+    <main className="p-8 mx-auto max-w-7xl">
+      <div className="items-start flex flex-col">
+        <CardTitle className="text-3xl font-bold tracking-tight xs:hidden sm:block">
+          Dashboard
+        </CardTitle>
+        <CardDescription className="xs:hidden sm:block">
+          This page is only accessible to admin users, and will display user data.
+        </CardDescription>
       </div>
-    </section>
+      <div className="container mx-auto py-10 !px-0">
+        <DataResponse />
+      </div>
+    </main>
   );
 }
