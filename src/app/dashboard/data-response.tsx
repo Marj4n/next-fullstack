@@ -11,7 +11,7 @@ const DataResponse = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/api/users");
+        const response = await axios.get("/api/user");
         setData(response.data.users);
       } catch (error) {
         console.error("Error fetching user data:", error);

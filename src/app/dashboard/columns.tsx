@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 
 const handleDelete = async (userId: number) => {
   try {
-    await axios.delete(`/api/users?userId=${userId}`);
+    await axios.delete(`/api/user?id=${userId}`);
 
     setTimeout(() => {
       location.reload();

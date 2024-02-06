@@ -4,49 +4,6 @@ import { isLogin } from "@/lib/utils";
 import { userCreationSchema } from "@/schemas/user";
 import { hash } from "bcrypt";
 
-export async function POST(req: Request, res: Response) {
-  try {
-    const body = await req.json();
-    const { name, username, password, role } = userCreationSchema.parse(body);
-
-    const hashedPassword = await hash(password!, 12);
-
-    const createdUser = await prisma.user.create({
-      data: {
-        name: name!,
-        username: username,
-        password: hashedPassword,
-        role: role,
-      },
-    });
-
-    const user = {
-      name: createdUser.name,
-      username: createdUser.username,
-      password: hashedPassword,
-      role: createdUser.role,
-    };
-
-    return NextResponse.json(
-      {
-        success: true,
-        user: user,
-      },
-      {
-        status: 201,
-      }
-    );
-  } catch (error) {
-    console.error("Error creating user:", error);
-    return NextResponse.json(
-      { error: "An unexpected error occurred.", message: error },
-      {
-        status: 500,
-      }
-    );
-  }
-}
-
 export async function GET(req: NextRequest) {
   if (!isLogin(req)) {
     return NextResponse.json(
@@ -94,10 +51,87 @@ export async function GET(req: NextRequest) {
   }
 }
 
+export async function POST(req: Request, res: Response) {
+  try {
+    const body = await req.json();
+    const { name, username, password, role } = userCreationSchema.parse(body);
+
+    const hashedPassword = await hash(password!, 12);
+
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Username already exists.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const createdUser = await prisma.user.create({
+      data: {
+        name: name!,
+        username: username,
+        password: hashedPassword,
+        role: role,
+      },
+    });
+
+    const user = {
+      name: createdUser.name,
+      username: createdUser.username,
+      password: hashedPassword,
+      role: createdUser.role,
+    };
+
+    return NextResponse.json(
+      {
+        success: true,
+        user: user,
+      },
+      {
+        status: 201,
+      }
+    );
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return NextResponse.json(
+      { error: "An unexpected error occurred.", message: error },
+      {
+        status: 500,
+      }
+    );
+  }
+}
+
 export async function DELETE(req: Request, res: Response) {
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
+    const userId = searchParams.get("id");
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(userId),
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          error: "User not found.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
 
     await prisma.user.delete({
       where: {

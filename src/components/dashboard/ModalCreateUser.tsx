@@ -28,7 +28,7 @@ const ModalCreateUser = () => {
 
   function onSubmit(data: z.infer<typeof userCreationSchema>) {
     try {
-      axios.post("/api/users", {
+      axios.post("/api/user", {
         name: data.name,
         username: data.username,
         password: data.password,

@@ -15,17 +15,28 @@ export async function GET(req: NextRequest) {
   }
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
+    const userId = searchParams.get("id");
 
-    const users = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: Number(userId),
       },
     });
 
+    if (!user) {
+      return NextResponse.json(
+        {
+          error: "User not found.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
     return NextResponse.json(
       {
-        users,
+        user,
       },
       {
         status: 200,
