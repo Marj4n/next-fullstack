@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  // Change "mysql" to "postgresql", "sqlserver" or "sqlite" depending on your database
+  // Change "mysql" to "postgres '-ql", "sqlserver" or "sqlite" depending on your database
   provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
@@ -26,10 +26,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Photo        Photo[]
-  Album        Album[]
-  PhotoComment PhotoComment[]
-  PhotoLike    PhotoLike[]
+  Photo Photo[]
 }
 
 model Photo {
@@ -38,58 +35,9 @@ model Photo {
   description String
   url         String
   userId      Int
-  albumId     Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  User        User     @relation(fields: [userId], references: [id])
 
-  user         User           @relation(fields: [userId], references: [id])
-  album        Album          @relation(fields: [albumId], references: [id])
-  PhotoComment PhotoComment[]
-  PhotoLike    PhotoLike[]
-
-  @@index([userId])
-  @@index([albumId])
-}
-
-model Album {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  userId      Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  User  User    @relation(fields: [userId], references: [id])
-  Photo Photo[]
-
-  @@index([userId])
-}
-
-model PhotoComment {
-  id        Int      @id @default(autoincrement())
-  comment   String
-  photoId   Int
-  userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Photo Photo @relation(fields: [photoId], references: [id])
-  User  User  @relation(fields: [userId], references: [id])
-
-  @@index([photoId])
-  @@index([userId])
-}
-
-model PhotoLike {
-  id        Int      @id @default(autoincrement())
-  photoId   Int
-  userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Photo Photo @relation(fields: [photoId], references: [id])
-  User  User  @relation(fields: [userId], references: [id])
-
-  @@index([photoId])
   @@index([userId])
 }
