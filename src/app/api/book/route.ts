@@ -89,7 +89,24 @@ export async function PUT(req: NextRequest) {
     const { title, author, published, description, pdf, cover } =
       bookCreationSchema.parse(body);
 
-    const book = await prisma.book.update({
+    const book = prisma.book.findUnique({
+      where: {
+        id: Number(bookId),
+      },
+    });
+
+    if (!book) {
+      return NextResponse.json(
+        {
+          error: "Book not found.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    await prisma.book.update({
       where: {
         id: Number(bookId),
       },
@@ -105,7 +122,8 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json(
       {
-        book,
+        success: true,
+        message: "Book updated.",
       },
       {
         status: 200,

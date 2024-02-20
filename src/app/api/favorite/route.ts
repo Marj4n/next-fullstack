@@ -1,47 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isLogin } from "@/lib/utils";
-import { userCreationSchema } from "@/schemas/user";
-import { hash } from "bcrypt";
+import { favoriteCreationSchema } from "@/schemas/favorite";
 
 export async function GET(req: NextRequest) {
-  if (!isLogin(req)) {
-    return NextResponse.json(
-      {
-        error: "Unauthorized",
-      },
-      {
-        status: 401,
-      }
-    );
-  }
   try {
-    const users = await prisma.user.findMany({
-      where: {
-        role: {
-          not: "admin",
+    const favorites = await prisma.favorite.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            name: true,
+          },
         },
-      },
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
+        book: true,
       },
     });
-
     return NextResponse.json(
       {
-        users,
+        favorites,
       },
       {
         status: 200,
       }
     );
   } catch (error) {
-    console.error("Error getting users:", error);
+    console.error("Error getting favorites:", error);
     return NextResponse.json(
       { error: "An unexpected error occurred." },
       {
@@ -64,21 +49,51 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json();
-    const { name, username, password, role } = userCreationSchema.parse(body);
+    const { userId, bookId } = favoriteCreationSchema.parse(body);
 
-    const hashedPassword = await hash(password!, 12);
-
-    const existingUser = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
-        username: username,
+        id: userId,
+      },
+    });
+    if (!user) {
+      return NextResponse.json(
+        {
+          error: "User not found.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    const book = await prisma.book.findUnique({
+      where: {
+        id: bookId,
+      },
+    });
+    if (!book) {
+      return NextResponse.json(
+        {
+          error: "Book not found.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    const existingFavorite = await prisma.favorite.findFirst({
+      where: {
+        userId,
+        bookId,
       },
     });
 
-    if (existingUser) {
+    if (existingFavorite) {
       return NextResponse.json(
         {
-          success: false,
-          message: "Username already exists.",
+          error: "Favorite already exists.",
         },
         {
           status: 400,
@@ -86,34 +101,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const createdUser = await prisma.user.create({
+    const favorite = await prisma.favorite.create({
       data: {
-        name: name!,
-        username: username,
-        password: hashedPassword,
-        role: role,
+        userId,
+        bookId,
       },
     });
 
-    const user = {
-      name: createdUser.name,
-      username: createdUser.username,
-      password: hashedPassword,
-      role: createdUser.role,
-    };
-
     return NextResponse.json(
       {
-        user,
+        favorite,
       },
       {
         status: 201,
       }
     );
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error creating favorite:", error);
     return NextResponse.json(
-      { error: "An unexpected error occurred.", message: error },
+      { error: "An unexpected error occurred." },
       {
         status: 500,
       }
@@ -134,17 +140,17 @@ export async function DELETE(req: NextRequest) {
   }
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("id");
-    const user = await prisma.user.findUnique({
+    const favoriteId = searchParams.get("id");
+    const favorite = await prisma.favorite.findUnique({
       where: {
-        id: Number(userId),
+        id: Number(favoriteId),
       },
     });
 
-    if (!user) {
+    if (!favorite) {
       return NextResponse.json(
         {
-          error: "User not found.",
+          error: "Favorite not found.",
         },
         {
           status: 404,
@@ -152,23 +158,23 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    await prisma.user.delete({
+    await prisma.favorite.delete({
       where: {
-        id: Number(userId),
+        id: Number(favoriteId),
       },
     });
 
     return NextResponse.json(
       {
         success: true,
-        message: "User deleted.",
+        message: "favorite deleted.",
       },
       {
         status: 200,
       }
     );
   } catch (error) {
-    console.error("Error deleting user:", error);
+    console.error("Error deleting favorite:", error);
     return NextResponse.json(
       { error: "An unexpected error occurred." },
       {
