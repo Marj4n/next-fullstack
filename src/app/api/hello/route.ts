@@ -46,6 +46,73 @@ export async function GET(req: NextRequest) {
               description: "Deletes a user",
             },
           ],
+          Book: [
+            {
+              route: "book",
+              method: "GET",
+              description: "Returns a list of books",
+            },
+            {
+              route: "book/one?id=$id",
+              method: "GET",
+              description: "Returns a single book",
+            },
+            {
+              route: "book",
+              method: "POST",
+              description: "Creates a new book",
+              body: {
+                title: "string",
+                author: "string",
+                published: "date",
+                description: "string",
+                pdf: "string",
+                cover: "string",
+              },
+            },
+            {
+              route: "book?id=$id",
+              method: "PUT",
+              description: "Updates a book",
+              body: {
+                title: "string",
+                author: "string",
+                published: "date",
+                description: "string",
+                pdf: "string",
+                cover: "string",
+              },
+            },
+            {
+              route: "book?id=$id",
+              method: "DELETE",
+              description: "Deletes a book",
+            },
+          ],
+          Favorite: [
+            {
+              route: "favorite",
+              method: "GET",
+              description: "Returns a list of favorites",
+              params: {
+                userId: "number",
+              },
+            },
+            {
+              route: "favorite",
+              method: "POST",
+              description: "Creates a new favorite",
+              body: {
+                userId: "number",
+                bookId: "number",
+              },
+            },
+            {
+              route: "favorite?id=$id",
+              method: "DELETE",
+              description: "Deletes a favorite",
+            },
+          ],
           Auth: [
             {
               route: "register",

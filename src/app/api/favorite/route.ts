@@ -5,6 +5,26 @@ import { favoriteCreationSchema } from "@/schemas/favorite";
 
 export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+
+    if (userId) {
+      const favorite = await prisma.favorite.findMany({
+        where: {
+          userId: Number(userId),
+        },
+      });
+
+      return NextResponse.json(
+        {
+          favorite,
+        },
+        {
+          status: 200,
+        }
+      );
+    }
+
     const favorites = await prisma.favorite.findMany({
       include: {
         user: {
