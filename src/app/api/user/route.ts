@@ -51,7 +51,17 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: NextRequest) {
+  if (!isLogin(req)) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized",
+      },
+      {
+        status: 401,
+      }
+    );
+  }
   try {
     const body = await req.json();
     const { name, username, password, role } = userCreationSchema.parse(body);
@@ -112,7 +122,17 @@ export async function POST(req: Request, res: Response) {
   }
 }
 
-export async function DELETE(req: Request, res: Response) {
+export async function DELETE(req: NextRequest) {
+  if (!isLogin(req)) {
+    return NextResponse.json(
+      {
+        error: "Unauthorized",
+      },
+      {
+        status: 401,
+      }
+    );
+  }
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("id");
